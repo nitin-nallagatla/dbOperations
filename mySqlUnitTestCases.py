@@ -345,6 +345,96 @@ class testCases(unittest.TestCase):
         self.assertIsNone((self.msc.readQueryData(statement, self.conn)), "Invalid Statement")
         self.conn.close()
 
+    def testCsvToSQL(self, path="C:\\Users\\Nitin\\Downloads\\username1.csv", tableName="usernameTableTC"):
+        """
+        Positive Test Case for csvToSQL method.
+        Parameters:
+            path (String) : Path of the CSV file created by converting SQL table.
+            tableName (String) : What to name the created table.
+        Returns:
+            Returns nothing if succeeded.
+        """
+        self.assertIsNotNone((self.msc.csvToSQL(path, tableName)), "Unexpected error Occurred")
+
+    def testCsvToSQL1(self, path="error", tableName="usernames"):
+        """
+        Negative Test Case for csvToSQL method.
+        Parameters:
+            path (String) : Path of the CSV file created by converting SQL table.
+            tableName (String) : What to name the created table.
+        Returns:
+            Returns nothing if failed as expected.
+        """
+        self.assertIsNone((self.msc.csvToSQL(path, tableName)), "Invalid File to Convert to SQL")
+
+    def testSqlToCSV(self, path="C:\\Users\\Nitin\\Downloads\\studentOutputTC.csv", tableName="student"):
+        """
+        Positive Test Case for sqlToCSV method.
+        Parameters:
+            path (String) : Path of the CSV file to be created by converting SQL table.
+            tableName (String) : Name of the SQL table to use to create the CSV file.
+        Returns:
+            Returns nothing if succeeded.
+        """
+        self.assertIsNotNone((self.msc.sqlToCSV(path, tableName)), "Unexpected error Occurred")
+
+    def testSqlToCSV1(self, path="C:\\Users\\Nitin\\Downloads\\studentOutputTC.csv", tableName="error"):
+        """
+        Positive Test Case for sqlToCSV method.
+        Parameters:
+            path (String) : Path of the CSV file to be created by converting SQL table.
+            tableName (String) : Name of the SQL table to use to create the CSV file.
+        Returns:
+            Returns nothing if succeded.
+        """
+        self.assertIsNone((self.msc.sqlToCSV(path, tableName)), "Invalid SQL Table to Convert to CSV")
+
+    def testCompareFiles(self, path1="C:\\Users\\Nitin\\Downloads\\username2.csv",
+                         path2="C:\\Users\\Nitin\\Downloads\\username3.csv"):
+        """
+        Positive Test Case for compareFiles method.
+        Parameters:
+            path1 (String) : Path of the first CSV file to compare.
+            path2 (String) : Path of the second CSV file to compare.
+        Returns:
+            Returns nothing if succeeded.
+        """
+        self.assertIsNotNone((self.msc.compareFiles(path1, path2)), "Unexpected error Occurred")
+
+    def testCompareFilesA(self, path1="C:\\Users\\Nitin\\Downloads\\username1.csv",
+                          path2="C:\\Users\\Nitin\\Downloads\\username3.csv"):
+        """
+        Positive Test Case for compareFiles method.
+        Parameters:
+            path1 (String) : Path of the first CSV file to compare.
+            path2 (String) : Path of the second CSV file to compare.
+        Returns:
+            Returns nothing if succeeded.
+        """
+        self.assertIsNotNone((self.msc.compareFiles(path1, path2)), "Unexpected error Occurred")
+
+    def testCompareFiles1(self, path1="error", path2="C:\\Users\\Nitin\\Downloads\\username3.csv"):
+        """
+        Negative Test Case for compareFiles method. Deliberately passing invalid path1.
+        Parameters:
+            path1 (String) : Path of the first CSV file to compare.
+            path2 (String) : Path of the second CSV file to compare.
+        Returns:
+            Returns nothing if failed as expected.
+        """
+        self.assertIsNone((self.msc.compareFiles(path1, path2)), "Unexpected error Occurred")
+
+    def testCompareFiles2(self, path1="C:\\Users\\Nitin\\Downloads\\username1.csv", path2="error"):
+        """
+        Negative Test Case for compareFiles method. Deliberately passing invalid path2.
+        Parameters:
+            path1 (String) : Path of the first CSV file to compare.
+            path2 (String) : Path of the second CSV file to compare.
+        Returns:
+            Returns nothing if failed as expected.
+        """
+        self.assertIsNone((self.msc.compareFiles(path1, path2)), "Unexpected error Occurred")
+
 
 if __name__ == '__main__':
     unittest.main()

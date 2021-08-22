@@ -1,5 +1,7 @@
+import hashlib
 import logging
-
+import os
+from difflib import Differ
 import mysql.connector
 import pandas as pd
 import pymysql
@@ -13,7 +15,7 @@ class mySql:
     try:
 
         logging.basicConfig(filename='mySqlClass.log', filemode='w',
-                            format='[{%(asctime)s} %(filename)s: %(lineno)d]\t%(name)s - %(levelname)s - %(message)s',
+                            format='[{%(asctime)s} %(filename)s: %(lineno)d]\t%(name)s - %(levelname)s > %(message)s',
                             level=logging.INFO)
 
         def connectMethod(self, username, password, tableName, usernameCol, passwordCol, cursor):
@@ -297,9 +299,117 @@ class mySql:
             # finally:
             #     conn.close()
 
+        def csvToSQL(self, path, tableName):
+            """
+                Converts a CSV file into a SQL table.
+                Parameters:
+                    path (String) : Path of the CSV file to convert into SQL table.
+                    tableName (String) : Name of table to create out of the CSV file.
+                Returns:
+                    Returns nothing if successful. Logs success or failure.
+            """
+            try:
+                # engine = create_engine(
+                # "mysql+pymysql://{user}:{pw}@localhost/{db}".format(user = "test", pw = "password", db = "sampleDatabase"))
+                engine = create_engine('mysql+pymysql://test:password@localhost/sampleDatabase')
+                logging.info("Established Connection")
+
+                data = pd.read_csv(path)
+                logging.info(data)
+
+                data.to_sql(con=engine, name=tableName, if_exists='append', chunksize=1000, index=False)
+
+                logging.info("Created table.")
+                return 1
+            except Exception as e:
+                logging.error("csvToSqlTable: {}".format(e))
+            finally:
+                engine.dispose()
+
+        def sqlToCSV(self, path, tableName):
+            """
+                Converts a SQL table into CSV file.
+                Parameters:
+                    path (String) : Path of the CSV file created by converting SQL table.
+                    tableName (String) : Name of table to create the CSV file with.
+                Returns:
+                    Returns nothing if successful. Logs success or failure.
+            """
+            try:
+                # engine = create_engine(
+                # "mysql+pymysql://{user}:{pw}@localhost/{db}".format(user = "test", pw = "password", db = "sampleDatabase"))
+                engine = create_engine('mysql+pymysql://test:password@localhost/sampleDatabase')
+                logging.info("Established Connection")
+
+                sql = "Select * from {}".format(tableName)
+                df = pd.read_sql(sql, engine)
+
+                if path[-4:] != ".csv":
+                    path += ".csv"
+
+                df.to_csv(path, index=False)
+
+                logging.info("Created / Modified CSV.")
+                return 1
+            except Exception as e:
+                logging.error("csvToSqlTable: {}".format(e))
+            finally:
+                engine.dispose()
+
+        def compareFiles(self, path1, path2):
+            """
+                Compares two CSV files.
+                Parameters:
+                    path1 (String) : Path of the first CSV file to compare.
+                    path2 (String) : Path of the second CSV file to compare.
+                Returns:
+                    Returns nothing if successful. Logs success or failure.
+            """
+            try:
+                logging.info("File Sizes: %s bytes, %s bytes" % (os.path.getsize(path1), os.path.getsize(path2)))
+
+                file1Sha = mySql.fileHasher(self, path1)
+                file2Sha = mySql.fileHasher(self, path2)
+
+                if (file1Sha == file2Sha):
+                    logging.info("The files are the same. ")
+                    return 0
+                else:
+                    with open(path1) as file_1, open(path2) as file_2:
+                        differ = Differ()
+                        for line in differ.compare(file_1.readlines(), file_2.readlines()):
+                            logging.info(line)
+                return 1
+            except Exception as e:
+                logging.error("compareFiles: {}".format(e))
+
+        def fileHasher(self, path):
+            """
+                Returns SHA-1 code of a file.
+                Parameters:
+                    path (String) : Path of the file to return SHA-1 code.
+                Returns:
+                    Returns SHA-1 code if successful.
+            """
+            try:
+                hashObj = hashlib.sha1()
+                with open(path, 'rb') as f:
+                    fileChunk = 0
+                    while fileChunk != b'':
+                        fileChunk = f.read(1024)
+                        hashObj.update(fileChunk)
+                return hashObj.hexdigest()
+            except Error as e:
+                logging.error("fileHasher: {}".format(e))
+
+
     except Error as e:
         logging.error("Generic Error: {}".format(e))
 
-    # finally:
-    #     logging.info("ENDING")
-    #     conn.close()
+# ctst = mySql()
+# ctst.compareFiles("C:\\Users\\Nitin\\Downloads\\username2.csv", "C:\\Users\\Nitin\\Downloads\\username3.csv")
+# ctst.compareFiles("C:\\Users\\Nitin\\Downloads\\username1.csv", "C:\\Users\\Nitin\\Downloads\\username3.csv")
+# ctst.csvToSQL("C:\\Users\\Nitin\\Downloads\\username2Point1.csv", "username2Point1")
+# ctst.csvToSQL("C:\\Users\\Nitin\\Downloads\\username9871.csv", "username9871")
+# ctst.sqlToCSV("C:\\Users\\Nitin\\Downloads\\student.csv", "student")
+# ctst.sqlToCSV("C:\\Users\\Nitin\\Downloads\\student", "student")

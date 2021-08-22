@@ -2,7 +2,7 @@
 
 __author__ = "Nitin Nallagatla"
 __email__ = "nitinrnallagatla@gmail.com"
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 import argparse
 import json
@@ -22,15 +22,18 @@ def main():
     retcode = 0
     parser = argparse.ArgumentParser(
         description='Input method to  run and necessary parameters: Options:\n'
-                    '--input connectMethod --username "John" --password "14789" '
+                    '--chosenMethod connectMethod --username "John" --password "14789" '
                     '--tableName "student" --usernameCol "name" --passwordCol "id"\n'
-                    '--input readTableData --tableName "student"\n'
-                    '--input readSampleData --input numRows "3" --tableName "student"\n'
-                    '--input readColumnData --tableName "student" --columnName "name\n'
-                    '--input findRow --searchDict {"name" : "John", "id" : 14789} --tableName "student"\n'
-                    '--input createObject --tableName "nameTable" --columnName "name"\n'
-                    '--input dropTable --tableName "student"\n'
-                    '--input readQueryData --statement "Select * from student"\n', formatter_class=RawTextHelpFormatter)
+                    '--chosenMethod readTableData --tableName "student"\n'
+                    '--chosenMethod readSampleData --input numRows "3" --tableName "student"\n'
+                    '--chosenMethod readColumnData --tableName "student" --columnName "name\n'
+                    '--chosenMethod findRow --searchDict {"name" : "John", "id" : 14789} --tableName "student"\n'
+                    '--chosenMethod createObject --tableName "nameTable" --columnName "name"\n'
+                    '--chosenMethod dropTable --tableName "student"\n'
+                    '--chosenMethod readQueryData --statement "Select * from student"\n'
+                    '--chosenMethod csvToSQL --path <your CSV file path> --tableName username\n'
+                    '--chosenMethod sqlToCSV --path <your CSV file path> --tableName username\n',
+        formatter_class=RawTextHelpFormatter)
     parser.add_argument('-username', "--username", help='input username')
     parser.add_argument('-password', "--password", type=int, help='input password')
     parser.add_argument('-usernameCol', "--usernameCol", help='input col of usernames')
@@ -43,13 +46,13 @@ def main():
     parser.add_argument('-searchDict', "--searchDict", help='input dictionary as string to search for')
     parser.add_argument('-df', "--df", help='input data frame to fill table with')
     parser.add_argument('-statement', "--statement", help='input statement to run')
-    parser.add_argument('-chosenMethod', "--chosenMethod", help='input function to run. ')
+    parser.add_argument('-chosenMethod', "--chosenMethod", help='input function to run ')
+    parser.add_argument('-path', '--path', help='path of file to be converted csv file to sql table to operate on ')
     # parser.add_argument('-d', '--searchDict', type=json.loads)
 
     args = vars(parser.parse_args())
 
     try:
-
         username = args["username"]
         password = args["password"]
         tableName = args["tableName"]
@@ -60,6 +63,9 @@ def main():
         numRows = args["numRows"]
         chosenMethod = args["chosenMethod"]
         searchDict = args["searchDict"]
+        csvToSql = args["csvToSQL"]
+        sqlToCSV = args["sqlToCSV"]
+        path = args["path"]
 
         msc = mySqlClass.mySql()
 
@@ -91,7 +97,10 @@ def main():
             result = msc.dropTable(tableName, cursor)
         elif chosenMethod == 'readQueryData':
             result = msc.readQueryData(statement, conn)
-
+        elif chosenMethod == 'csvToSQL':
+            result = msc.csvToSQL(path, tableName)
+        elif chosenMethod == 'sqlToCSV':
+            result = msc.sqlToCSV(path, tableName)
         if result is not None:
             print(result)
         else:
