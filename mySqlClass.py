@@ -29,7 +29,7 @@ class mySql:
                 passwordCol (String) : Name of column to look for password in.
                 cursor (mySql Connection) : Cursor to execute mySql queries with.
             Returns:
-                Returns true or false based on whether username and table are in the table. Logs results.
+                Returns true or false based on whether username and password are in the table. Logs results.
             """
             sql = "SELECT * FROM " + tableName + " where " + usernameCol + " = '" + \
                   username + "' and " + passwordCol + " = " + str(password) + ")"
