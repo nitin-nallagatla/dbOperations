@@ -88,7 +88,6 @@ class mySql:
                 Returns random rows as a list of sets. Logs success or failure and prints results.
             """
             sql = "SELECT * FROM " + tableName + " Order by Rand() Limit " + str(numRows) + ";"
-            # print(sql)
             try:
                 cursor.execute(sql)
                 result = cursor.fetchall()
