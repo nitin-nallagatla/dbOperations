@@ -57,7 +57,7 @@ class mySql:
                 tableName (String) : Name of table to read data from.
                 conn (mySql) : Connection to copy table data into dataframe.
             Returns:
-                Returns dataframe made out of table or -1 if error occurs. Logs success or failure, and prints dataframe.
+                Returns dataframe constructed from table or -1 if error occurs. Logs success or failure, and prints dataframe.
             """
             sql = "Select * from %s" % tableName
             try:
