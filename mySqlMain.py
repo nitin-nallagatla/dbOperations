@@ -11,7 +11,6 @@ import sys
 from argparse import RawTextHelpFormatter
 
 import mysql.connector
-
 import mySqlClass
 
 
